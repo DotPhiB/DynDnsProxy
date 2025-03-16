@@ -1,5 +1,6 @@
-using DynDnsProxy;
 using Microsoft.Extensions.Options;
+
+namespace DynDnsProxy;
 
 public class DynDnsService(IOptionsMonitor<DynDnsConfiguration> dynDnsConfiguration)
 {
