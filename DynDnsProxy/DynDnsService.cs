@@ -1,0 +1,8 @@
+using DynDnsProxy;
+using Microsoft.Extensions.Options;
+
+public class DynDnsService(IOptionsMonitor<DynDnsConfiguration> dynDnsConfiguration)
+{
+    public string Update(string ip4, string ip6, string ip6LanPrefix, string domain)
+        => dynDnsConfiguration.CurrentValue.UpdateUrl;
+}
