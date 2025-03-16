@@ -4,30 +4,33 @@ using NSubstitute;
 
 namespace Test.DynDnsProxy;
 
-public class DynDnsServiceTests
+public class DynDnsServiceTests : TestsFor<DynDnsService>
 {
-    private IOptionsMonitor<DynDnsConfiguration> _optionsMonitor;
-    private DynDnsConfiguration _testSettings;
-
     [SetUp]
     public void Setup()
     {
-        _testSettings = new DynDnsConfiguration()
+        Set.SubstituteFor<DynDnsConfiguration>().To(new DynDnsConfiguration()
         {
             UpdateUrl = "https://example.com/update?hostname=<domain>&myip=<ip4>,<ip6>",
             UserName = "myUser",
             Password = "myPassword",
-        };
-        _optionsMonitor = Substitute.For<IOptionsMonitor<DynDnsConfiguration>>();
-        _optionsMonitor.CurrentValue.Returns(_testSettings);
+        });
+        Set.SubstituteFor<IOptionsMonitor<DynDnsConfiguration>>()
+            .Configure(monitor => monitor.CurrentValue.Returns(SubstituteFor<DynDnsConfiguration>()));
     }
 
     [Test]
     public void UpdateShouldReturnUpdateUrl()
     {
-        var sut = new DynDnsService(_optionsMonitor);
-        var expected = _testSettings.UpdateUrl;
-        var actual = sut.Update("","","","");
+        var expected = SubstituteFor<DynDnsConfiguration>().UpdateUrl;
+        var actual = Subject.Update("", "", "", "");
         Assert.That(actual, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void ShouldThrow()
+    {
+        Set.SubstituteFor<DynDnsConfiguration>().To((DynDnsConfiguration)null!);
+        Assert.Throws<NullReferenceException>(() => Subject.Update("", "", "", ""));
     }
 }
