@@ -1,3 +1,5 @@
+using DynDnsProxy;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -15,5 +17,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+var dynDnsConfiguration = app.Configuration.GetSection("DynDns").Get<DynDnsConfiguration>();
+if (dynDnsConfiguration == null)
+    throw new ApplicationException("Config is missing.");
+
+app.MapGet("/dyndns/update",
+    (string ip4, string ip6, string ip6LanPrefix, string domain) => dynDnsConfiguration.UpdateUrl);
 
 app.Run();
