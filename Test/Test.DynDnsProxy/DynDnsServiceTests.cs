@@ -20,10 +20,13 @@ public class DynDnsServiceTests : TestsFor<DynDnsService>
     }
 
     [Test]
-    public void UpdateShouldReturnUpdateUrl()
+    public void UpdateShouldReturnReplacedUrl()
     {
-        var expected = SubstituteFor<DynDnsConfiguration>().UpdateUrl;
-        var actual = Subject.Update("", "", "", "");
+        var expected = SubstituteFor<DynDnsConfiguration>().UpdateUrl
+            .Replace("<domain>", "example.com")
+            .Replace("<ip4>", "1.1.1.1")
+            .Replace("<ip6>", "1::1");
+        var actual = Subject.Update("1.1.1.1", "::1", "1::", "example.com");
         Assert.That(actual, Is.EqualTo(expected));
     }
 
