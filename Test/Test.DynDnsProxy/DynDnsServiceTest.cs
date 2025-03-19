@@ -63,7 +63,7 @@ public class DynDnsServiceTest : TestsFor<DynDnsService>
     [Test]
     public void ShouldThrow()
     {
-        Set.SubstituteFor<DynDnsConfiguration>().To((DynDnsConfiguration)null!);
+        Set.SubstituteFor<DynDnsConfiguration>().ToNull();
         Assert.ThrowsAsync<NullReferenceException>(async () => await Subject.Update("", "", "", ""));
     }
 }

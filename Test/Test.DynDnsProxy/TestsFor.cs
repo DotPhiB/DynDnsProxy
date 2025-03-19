@@ -53,7 +53,8 @@ public class TestsFor<T> where T : class
 
     protected class MockConfigurationBuilder<TFor>(Context context) where TFor : class
     {
-        public MockObjectConfigurator<TFor> To(TFor concrete) => To(() => concrete!);
+        public MockObjectConfigurator<TFor> ToNull() => To(() => null!);
+        public MockObjectConfigurator<TFor> To(TFor concrete) => To(() => concrete);
 
         public MockObjectConfigurator<TFor> To(Func<TFor> concrete)
         {
