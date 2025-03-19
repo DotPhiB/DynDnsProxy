@@ -19,14 +19,15 @@ public class DynDnsServiceTests : TestsFor<DynDnsService>
             .Configure(monitor => monitor.CurrentValue.Returns(SubstituteFor<DynDnsConfiguration>()));
     }
 
-    [Test]
-    public void UpdateShouldReturnReplacedUrl()
+    [TestCase("1.1.1.1", "example.com", "::1", "1::/24", "1::1")]
+    [TestCase("2.2.2.2", "my.example.com","::2", "2::/24", "2::2")]
+    public void UpdateShouldReturnReplacedUrl(string ipv, string domain, string ip6, string ip6LanPrefix, string? expectedIp6)
     {
         var expected = SubstituteFor<DynDnsConfiguration>().UpdateUrl
-            .Replace("<domain>", "example.com")
-            .Replace("<ip4>", "1.1.1.1")
-            .Replace("<ip6>", "1::1");
-        var actual = Subject.Update("1.1.1.1", "::1", "1::", "example.com");
+            .Replace("<domain>", domain)
+            .Replace("<ip4>", ipv)
+            .Replace("<ip6>", expectedIp6);
+        var actual = Subject.Update(ipv, ip6, ip6LanPrefix, domain);
         Assert.That(actual, Is.EqualTo(expected));
     }
 
