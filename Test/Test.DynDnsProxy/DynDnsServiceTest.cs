@@ -4,7 +4,10 @@ using NSubstitute;
 
 namespace Test.DynDnsProxy;
 
-public class DynDnsServiceTests : TestsFor<DynDnsService>
+
+[TestFixture]
+[TestOf(typeof(DynDnsService))]
+public class DynDnsServiceTest : TestsFor<DynDnsService>
 {
     [SetUp]
     public void Setup()
@@ -21,7 +24,7 @@ public class DynDnsServiceTests : TestsFor<DynDnsService>
 
     [TestCase("1.1.1.1", "example.com", "::1", "1::/24", "1::1")]
     [TestCase("2.2.2.2", "my.example.com","::2", "2::/24", "2::2")]
-    public void UpdateShouldReturnReplacedUrl(string ipv, string domain, string ip6, string ip6LanPrefix, string? expectedIp6)
+    public void UpdateShouldReturnReplacedUrl(string ipv, string domain, string ip6, string? ip6LanPrefix, string? expectedIp6)
     {
         var expected = SubstituteFor<DynDnsConfiguration>().UpdateUrl
             .Replace("<domain>", domain)

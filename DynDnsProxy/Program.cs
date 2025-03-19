@@ -22,7 +22,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapGet("/dyndns/update",
-    (string ip4, string ip6, string ip6LanPrefix, string domain) =>
+    (string ip4, string ip6, string? ip6LanPrefix, string domain) =>
     {
         using var scope = app.Services.CreateScope();
         return scope.ServiceProvider.GetRequiredService<DynDnsService>()
