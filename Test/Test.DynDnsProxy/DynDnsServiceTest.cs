@@ -23,9 +23,9 @@ public class DynDnsServiceTest : TestsFor<DynDnsService>
             .Configure(monitor => monitor.CurrentValue.Returns(SubstituteFor<DynDnsConfiguration>()));
     }
 
-    [TestCase("1.1.1.1", "example.com", "::1", "1::/24", "1::1")]
-    [TestCase("2.2.2.2", "my.example.com","::2", "2::/24", "2::2")]
-    public async Task UpdateShouldSucceed(string ipv, string domain, string ip6, string? ip6LanPrefix, string? expectedIp6)
+    [TestCase("1.1.1.1", "example.com", "::1", "1::/24")]
+    [TestCase("2.2.2.2", "my.example.com","::2", "2::/24")]
+    public async Task UpdateShouldSucceed(string ip4, string domain, string ip6, string? ip6LanPrefix)
     {
         using var httpTest = new HttpTest();
 
@@ -33,14 +33,31 @@ public class DynDnsServiceTest : TestsFor<DynDnsService>
 
         var expectedUrl = dynDnsConfiguration.UpdateUrl
             .Replace("<domain>", domain)
-            .Replace("<ip4>", ipv)
-            .Replace("<ip6>", expectedIp6);
+            .Replace("<ip4>", ip4)
+            .Replace("<ip6>", IpHelper.Combine(ip6LanPrefix, ip6));
 
-        await Subject.Update(ipv, ip6, ip6LanPrefix, domain);
+        const string expectedResultString = "Expected result.";
+        const int expectedStatusCode = 204;
 
-        httpTest.ShouldHaveCalled(expectedUrl)
-            .WithHeader("User_Agent", "DynDnsProxy")
-            .WithBasicAuth(dynDnsConfiguration.UserName, dynDnsConfiguration.Password);
+        httpTest.ForCallsTo(expectedUrl)
+            .RespondWith(expectedResultString, expectedStatusCode);
+
+        var result = await Subject.Update(ip4, ip6, ip6LanPrefix, domain);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.DoesNotThrow(()
+                => httpTest.ShouldHaveCalled(expectedUrl).Times(1));
+            Assert.DoesNotThrow(()
+                => httpTest.ShouldHaveCalled(expectedUrl).WithVerb(HttpMethod.Get));
+            Assert.DoesNotThrow(()
+                => httpTest.ShouldHaveCalled(expectedUrl).WithHeader("User_Agent", "DynDnsProxy"));
+            Assert.DoesNotThrow(()
+                => httpTest.ShouldHaveCalled(expectedUrl).WithBasicAuth(dynDnsConfiguration.UserName, dynDnsConfiguration.Password));
+
+            Assert.That(result.Value, Is.EqualTo(expectedResultString));
+            Assert.That(result.StatusCode, Is.EqualTo(expectedStatusCode));
+        }
     }
 
     [Test]
