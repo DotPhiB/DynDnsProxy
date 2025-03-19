@@ -1,4 +1,5 @@
 using DynDnsProxy;
+using Flurl.Http.Testing;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 
@@ -24,20 +25,28 @@ public class DynDnsServiceTest : TestsFor<DynDnsService>
 
     [TestCase("1.1.1.1", "example.com", "::1", "1::/24", "1::1")]
     [TestCase("2.2.2.2", "my.example.com","::2", "2::/24", "2::2")]
-    public void UpdateShouldReturnReplacedUrl(string ipv, string domain, string ip6, string? ip6LanPrefix, string? expectedIp6)
+    public async Task UpdateShouldSucceed(string ipv, string domain, string ip6, string? ip6LanPrefix, string? expectedIp6)
     {
-        var expected = SubstituteFor<DynDnsConfiguration>().UpdateUrl
+        using var httpTest = new HttpTest();
+
+        var dynDnsConfiguration = SubstituteFor<DynDnsConfiguration>();
+
+        var expectedUrl = dynDnsConfiguration.UpdateUrl
             .Replace("<domain>", domain)
             .Replace("<ip4>", ipv)
             .Replace("<ip6>", expectedIp6);
-        var actual = Subject.Update(ipv, ip6, ip6LanPrefix, domain);
-        Assert.That(actual, Is.EqualTo(expected));
+
+        await Subject.Update(ipv, ip6, ip6LanPrefix, domain);
+
+        httpTest.ShouldHaveCalled(expectedUrl)
+            .WithHeader("User_Agent", "DynDnsProxy")
+            .WithBasicAuth(dynDnsConfiguration.UserName, dynDnsConfiguration.Password);
     }
 
     [Test]
     public void ShouldThrow()
     {
         Set.SubstituteFor<DynDnsConfiguration>().To((DynDnsConfiguration)null!);
-        Assert.Throws<NullReferenceException>(() => Subject.Update("", "", "", ""));
+        Assert.ThrowsAsync<NullReferenceException>(async () => await Subject.Update("", "", "", ""));
     }
 }
