@@ -1,9 +1,11 @@
-﻿namespace DynDnsProxy;
+﻿using System.Net;
+
+namespace DynDnsProxy;
 
 public static class IpHelper
 {
     public static string Combine(string? network, string subAddress)
         => string.IsNullOrWhiteSpace(network)
             ? subAddress
-            : "1::1";
+            : IPNetwork2.Parse(network).GetAddress(IPAddress.Parse(subAddress)).ToString();
 }
