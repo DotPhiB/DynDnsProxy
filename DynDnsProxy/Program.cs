@@ -7,9 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddHttpLogging(options => options.LoggingFields =
-        HttpLoggingFields.RequestQuery
-        | HttpLoggingFields.ResponseBody
-        | HttpLoggingFields.ResponseStatusCode);
+        HttpLoggingFields.RequestProperties
+        | HttpLoggingFields.RequestQuery
+        | HttpLoggingFields.ResponseBody);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
