@@ -8,6 +8,7 @@ public class TestsFor<T> where T : class
     {
         public readonly Dictionary<Type, Func<object>> MockMap = new();
         public readonly Dictionary<Type, List<Action<object>>> MockConfigurations = new();
+        public T? Subject { get; set; }
     }
     private Context _context;
 
@@ -16,15 +17,16 @@ public class TestsFor<T> where T : class
     {
         _context = new Context();
     }
-    
-    protected T Subject
+
+    protected T Subject => _context.Subject ??= CreateSubject();
+
+    private T CreateSubject()
     {
-        get
-        {
-            var constructorInfo = typeof(T).GetConstructors().First();
-            return (T)constructorInfo.Invoke(constructorInfo.GetParameters().Select(x => SubstituteFor(x.ParameterType))
-                .ToArray());
-        }
+        var constructorInfo = typeof(T).GetConstructors().First();
+        var parameters = constructorInfo.GetParameters()
+            .Select(x => SubstituteFor(x.ParameterType))
+            .ToArray();
+        return (T)constructorInfo.Invoke(parameters);
     }
 
     protected TFor SubstituteFor<TFor>() where TFor : class
