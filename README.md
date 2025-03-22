@@ -35,4 +35,4 @@ The fritzbox will now call the local DynDnsProxy, whenever there is a change in 
 
 If you run this image locally and call it with explicit docker-host ip, there should be no issue.
 
-If you want to have an external proxy or need https and/or authentication for some reason, you can use a reverse-proxy (e.g. nginx) to add that.
+If you want to run your proxy with authentication, you can use a reverse-proxy (e.g. nginx) to add that.
