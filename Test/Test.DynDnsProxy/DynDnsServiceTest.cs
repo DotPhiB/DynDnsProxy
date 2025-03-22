@@ -10,8 +10,8 @@ namespace Test.DynDnsProxy;
 [TestOf(typeof(DynDnsService))]
 public class DynDnsServiceTest : TestsFor<DynDnsService>
 {
-    [SetUp]
-    public void Setup()
+
+    protected override void SetUpSubstitutions()
     {
         Set.SubstituteFor<DynDnsConfiguration>().To(new DynDnsConfiguration()
         {

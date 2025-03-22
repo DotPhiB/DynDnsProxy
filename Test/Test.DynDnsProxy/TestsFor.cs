@@ -2,7 +2,7 @@
 
 namespace Test.DynDnsProxy;
 
-public class TestsFor<T> where T : class
+public abstract class TestsFor<T> where T : class
 {
     protected class Context
     {
@@ -16,7 +16,10 @@ public class TestsFor<T> where T : class
     public void SetUpAutoInject()
     {
         _context = new Context();
+        SetUpSubstitutions();
     }
+
+    protected abstract void SetUpSubstitutions();
 
     protected T Subject => _context.Subject ??= CreateSubject();
 
