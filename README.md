@@ -16,15 +16,18 @@ It resolves the actual ip6, calls the dyndns-provider and returns the result.
 ## Example (fritzbox --> strato)
 
 Run DynDnsProxy on a local docker host, which is reachable by your fritzbox with the following environment variables:
-- DynDns__UpdateUrl: https://dyndns.strato.com/nic/update?hostname=<domain>&myip=<ip4>,<ip6>
+- DynDns__UpdateUrl: `https://dyndns.strato.com/nic/update?hostname=<domain>&myip=<ip4>,<ip6>`
 - DynDns__UserName: {strato-dyndns-user}
 - DynDns__Password: {strato-dyndns-password}
 
 Configure your local fritzbox to call dyndns with the following UpdateUrl:
-`http://{docker-host}:{container-port}/DynDns/Update?domain=<domain>&ip4=<ipaddr>&ip6lanprefix=<ip6lanprefix>&ip6={target-server-ip6}`
-- {docker-host} -> the domain or ip of your local docker-host
-- {container-port} -> the port of the DynDnsProxy container image
-- {target-server-ip6} -> the local ip6 of your server, which should be the target of DynDns
+```
+http://{docker-host}:{container-port}/DynDns/Update?domain=<domain>&ip4=<ipaddr>&ip6lanprefix=<ip6lanprefix>&ip6={target-server-ip6}
+```
+> Replace the values in curly brackets.
+> - {docker-host} -> the domain or ip of your local docker-host
+> - {container-port} -> the port of the DynDnsProxy container image
+> - {target-server-ip6} -> the local ip6 of your server, which should be the target of DynDns
 
 The fritzbox will now call the local DynDnsProxy, whenever there is a change in ips.
 
