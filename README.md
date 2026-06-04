@@ -1,5 +1,10 @@
 # DynDnsProxy
 
+[![.NET Tests](https://github.com/DotPhiB/DynDnsProxy/actions/workflows/execute-tests.yml/badge.svg)](https://github.com/DotPhiB/DynDnsProxy/actions/workflows/execute-tests.yml)
+[![Docker Publish](https://github.com/DotPhiB/DynDnsProxy/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/DotPhiB/DynDnsProxy/actions/workflows/docker-publish.yml)
+[![CodeQL](https://github.com/DotPhiB/DynDnsProxy/actions/workflows/codeql.yml/badge.svg)](https://github.com/DotPhiB/DynDnsProxy/actions/workflows/codeql.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A tiny proxy that fixes IPv6 handling for DynDNS updates.
 
 Image: [`ghcr.io/dotphib/dyndnsproxy`](https://github.com/DotPhiB/DynDnsProxy/pkgs/container/dyndnsproxy)
