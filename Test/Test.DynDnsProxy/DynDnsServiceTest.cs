@@ -32,9 +32,9 @@ public class DynDnsServiceTest : TestsFor<DynDnsService>
         var dynDnsConfiguration = SubstituteFor<DynDnsConfiguration>();
 
         var expectedUrl = dynDnsConfiguration.UpdateUrl
-            .Replace("<domain>", domain)
-            .Replace("<ip4>", ip4)
-            .Replace("<ip6>", IpHelper.Combine(ip6LanPrefix, ip6));
+            .Replace("<domain>", Uri.EscapeDataString(domain))
+            .Replace("<ip4>", Uri.EscapeDataString(ip4))
+            .Replace("<ip6>", Uri.EscapeDataString(IpHelper.Combine(ip6LanPrefix, ip6)));
 
         const string expectedResultString = "Expected result.";
         const int expectedStatusCode = 204;
@@ -51,12 +51,31 @@ public class DynDnsServiceTest : TestsFor<DynDnsService>
             Assert.DoesNotThrow(()
                 => httpTest.ShouldHaveCalled(expectedUrl).WithVerb(HttpMethod.Get));
             Assert.DoesNotThrow(()
-                => httpTest.ShouldHaveCalled(expectedUrl).WithHeader("User_Agent", "DynDnsProxy"));
+                => httpTest.ShouldHaveCalled(expectedUrl).WithHeader("User-Agent", "DynDnsProxy"));
             Assert.DoesNotThrow(()
                 => httpTest.ShouldHaveCalled(expectedUrl).WithBasicAuth(dynDnsConfiguration.UserName, dynDnsConfiguration.Password));
 
             Assert.That(result.Value, Is.EqualTo(expectedResultString));
             Assert.That(result.StatusCode, Is.EqualTo(expectedStatusCode));
+        }
+    }
+
+    [TestCase(400)]
+    [TestCase(401)]
+    [TestCase(500)]
+    public async Task UpdateShouldForwardErrorStatus(int statusCode)
+    {
+        using var httpTest = new HttpTest();
+
+        const string expectedResultString = "badauth";
+        httpTest.RespondWith(expectedResultString, statusCode);
+
+        var result = await Subject.Update("1.1.1.1", "::1", "1::/24", "example.com");
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Value, Is.EqualTo(expectedResultString));
+            Assert.That(result.StatusCode, Is.EqualTo(statusCode));
         }
     }
 

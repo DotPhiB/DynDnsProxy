@@ -1,8 +1,10 @@
-﻿namespace DynDnsProxy;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class DynDnsConfiguration()
+namespace DynDnsProxy;
+
+public class DynDnsConfiguration
 {
-    public required string UpdateUrl { get; init; }
-    public required string UserName { get; init; }
-    public required string Password { get; init; }
+    [Required] public required string UpdateUrl { get; init; }
+    [Required] public required string UserName { get; init; }
+    [Required] public required string Password { get; init; }
 }

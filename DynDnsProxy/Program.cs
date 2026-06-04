@@ -1,5 +1,6 @@
 using DynDnsProxy;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,11 @@ builder.Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.Configure<DynDnsConfiguration>(builder.Configuration.GetSection("DynDns"));
+builder.Services
+    .AddOptions<DynDnsConfiguration>()
+    .Bind(builder.Configuration.GetSection("DynDns"))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 builder.Services.AddSingleton<DynDnsService>();
 
 var app = builder.Build();
@@ -31,11 +36,7 @@ app.UseHttpLogging();
 app.UseHttpsRedirection();
 
 app.MapGet("/dyndns/update",
-    (string ip4, string ip6, string? ip6LanPrefix, string domain) =>
-    {
-        using var scope = app.Services.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<DynDnsService>()
-            .Update(ip4, ip6, ip6LanPrefix, domain);
-    });
+    ([FromServices] DynDnsService dynDnsService, string ip4, string ip6, string? ip6LanPrefix, string domain)
+        => dynDnsService.Update(ip4, ip6, ip6LanPrefix, domain));
 
 app.Run();
