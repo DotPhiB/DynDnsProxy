@@ -16,7 +16,7 @@ dotnet test
 dotnet run --project DynDnsProxy/DynDnsProxy.csproj
 ```
 
-The project targets **.NET 8** (ASP.NET Core). See [`README.md`](README.md) for
+The project targets **.NET 10** (ASP.NET Core). See [`README.md`](README.md) for
 configuration and the request flow.
 
 ## Making changes
@@ -26,6 +26,14 @@ configuration and the request flow.
 3. Add or update tests under `Test/Test.DynDnsProxy/` for any behaviour change.
 4. Make sure `dotnet build` and `dotnet test` pass before opening the PR.
 5. Match the existing code style (nullable enabled, implicit usings).
+
+## Changelog
+
+We keep a [Keep a Changelog](https://keepachangelog.com)-style
+[`CHANGELOG.md`](CHANGELOG.md). For any user-facing change, add a bullet under
+the `## [Unreleased]` section in the same PR, grouped under `Added`, `Changed`,
+`Fixed`, etc. Don't add a version heading or date — maintainers rename
+`[Unreleased]` to the new version at release time.
 
 ## Pull requests
 

@@ -10,6 +10,8 @@ A tiny proxy that fixes IPv6 handling for DynDNS updates.
 
 Image: [`ghcr.io/dotphib/dyndnsproxy`](https://github.com/DotPhiB/DynDnsProxy/pkgs/container/dyndnsproxy)
 
+Changes are tracked in [`CHANGELOG.md`](CHANGELOG.md).
+
 ## Why
 
 Routers like the [FRITZ!Box](https://en.avm.de/service/knowledge-base/dial-help/) can send their `ip6lanprefix` but not the full IPv6 address of the host you actually want to register. DynDNS providers, however, expect the **combined** address (prefix + host part). Since the prefix rotates on every reconnect, the router can't build that address itself.
