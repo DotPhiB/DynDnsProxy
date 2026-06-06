@@ -1,0 +1,37 @@
+name: Bug report
+description: Report a problem with DynDnsProxy
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug, including what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: How can we reproduce it? Include the request you sent (redact credentials).
+      placeholder: |
+        1. GET /dyndns/update?ip4=...&ip6=...&ip6LanPrefix=...&domain=...
+        2. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version / image tag
+      description: Which release or image tag are you running?
+      placeholder: "ghcr.io/dotphib/dyndnsproxy:latest"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Relevant log output (redact secrets and credentials).
+      render: shell
+    validations:
+      required: false

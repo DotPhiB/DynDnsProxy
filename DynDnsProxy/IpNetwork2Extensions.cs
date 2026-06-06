@@ -15,7 +15,7 @@ public static class IpNetwork2Extensions
 
         var targetAddressBytes = @this.Network.GetAddressBytes()
             .Zip(maskedSubAddressBytes)
-            .Select(x => (byte)(x.First + x.Second))
+            .Select(x => (byte)(x.First | x.Second))
             .ToArray();
 
         return new IPAddress(targetAddressBytes);

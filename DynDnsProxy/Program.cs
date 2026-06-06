@@ -1,5 +1,7 @@
 using DynDnsProxy;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.Mvc;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,11 +13,14 @@ builder.Services
         | HttpLoggingFields.RequestQuery
         | HttpLoggingFields.ResponseBody);
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
 
-builder.Services.Configure<DynDnsConfiguration>(builder.Configuration.GetSection("DynDns"));
+builder.Services
+    .AddOptions<DynDnsConfiguration>()
+    .Bind(builder.Configuration.GetSection("DynDns"))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 builder.Services.AddSingleton<DynDnsService>();
 
 var app = builder.Build();
@@ -23,19 +28,15 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpLogging();
 app.UseHttpsRedirection();
 
 app.MapGet("/dyndns/update",
-    (string ip4, string ip6, string? ip6LanPrefix, string domain) =>
-    {
-        using var scope = app.Services.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<DynDnsService>()
-            .Update(ip4, ip6, ip6LanPrefix, domain);
-    });
+    ([FromServices] DynDnsService dynDnsService, string ip4, string ip6, string? ip6LanPrefix, string domain)
+        => dynDnsService.Update(ip4, ip6, ip6LanPrefix, domain));
 
 app.Run();
