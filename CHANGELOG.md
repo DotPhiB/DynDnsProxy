@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced Swagger UI (Swashbuckle) with Scalar, served via the built-in
   `Microsoft.AspNetCore.OpenApi` document generator.
 - Hardened CI workflows and pinned GitHub Action references to commit SHAs.
+- Clarified the image tagging and security support policy: the `latest`, `1`,
+  and `1.1` tags advance to the newest release, while a patch tag such as
+  `1.1.1` pins a reproducible, immutable image.
 
 ### Fixed
 
