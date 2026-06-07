@@ -12,3 +12,4 @@
 - [ ] `dotnet test` passes
 - [ ] Tests added/updated for the change (if applicable)
 - [ ] Docs / README updated (if applicable)
+- [ ] `CHANGELOG.md` updated under `## [Unreleased]` (if user-facing)

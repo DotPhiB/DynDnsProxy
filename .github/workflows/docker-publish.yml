@@ -71,6 +71,14 @@ jobs:
         uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # `latest` is handled by the default `flavor: latest=auto`: it is only
+          # emitted for stable semver tag pushes (e.g. v1.1.1), never on branch
+          # pushes, and is skipped for pre-releases (e.g. v1.2.0-rc.1).
+          # Caveat: metadata-action decides `latest` solely from the ref being
+          # built — it does NOT compare against already-published tags. Pushing
+          # a backport tag on an older line (e.g. v1.1.2 after v2.0.1 exists)
+          # would move `latest` to the older build. Safe as long as tags are
+          # only ever pushed monotonically forward, which is fine for now.
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
