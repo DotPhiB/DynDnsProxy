@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-07-25
+
+### Security
+
+- Fixed CVE-2026-49451 / GHSA-v5pm-xwqc-g5wc: the transitive `Microsoft.OpenApi`
+  dependency (2.0.0, pulled in via `Microsoft.AspNetCore.OpenApi`) could terminate
+  the process on parsing a circular schema reference. Adopted NuGet Central Package
+  Management with transitive pinning and pinned `Microsoft.OpenApi` to 2.11.0.
+
+### Changed
+
+- Adopted Central Package Management (`Directory.Packages.props`) for all package
+  versions.
+- `latest` now tracks the main line only: a patch tag cut from a maintenance branch
+  refreshes its `1`/`1.x` tags without moving `latest` backwards.
+- Configured Dependabot to keep `Microsoft.OpenApi` on the 2.x line until the
+  framework's own floor moves.
+
 ## [1.1.0] - 2026-06-07
 
 ### Added
@@ -39,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release: DynDNS update proxy with a single
   `GET /dyndns/update` endpoint.
 
-[Unreleased]: https://github.com/DotPhiB/DynDnsProxy/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/DotPhiB/DynDnsProxy/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/DotPhiB/DynDnsProxy/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/DotPhiB/DynDnsProxy/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/DotPhiB/DynDnsProxy/releases/tag/v1.0.0
