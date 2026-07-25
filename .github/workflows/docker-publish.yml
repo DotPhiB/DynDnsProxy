@@ -64,6 +64,29 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Decide whether this build should move the `latest` tag. We only want
+      # `latest` to follow the main line, so it is emitted solely for semver tag
+      # pushes whose commit is reachable from main. A maintenance tag cut from a
+      # branch (e.g. a v1 line) still publishes its version tags but never moves
+      # `latest`, keeping `latest` monotonic even with backports.
+      - name: Determine if the tag is on the main line
+        id: mainline
+        if: github.event_name == 'push' && github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Ask GitHub whether the tagged commit is contained in main, so no
+          # local history is needed. base=main, head=tag: "identical"/"behind"
+          # mean the tag is on main; "diverged"/"ahead" mean it is not (e.g. a
+          # tag cut from a v1 maintenance branch comes back "diverged").
+          status=$(gh api "repos/${GITHUB_REPOSITORY}/compare/main...${GITHUB_SHA}" --jq '.status')
+          echo "compare status: ${status}"
+          if [ "$status" = "identical" ] || [ "$status" = "behind" ]; then
+            echo "on_main=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "on_main=false" >> "$GITHUB_OUTPUT"
+          fi
+
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
@@ -71,19 +94,18 @@ jobs:
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          # `latest` is handled by the default `flavor: latest=auto`: it is only
-          # emitted for stable semver tag pushes (e.g. v1.1.1), never on branch
-          # pushes, and is skipped for pre-releases (e.g. v1.2.0-rc.1).
-          # Caveat: metadata-action decides `latest` solely from the ref being
-          # built — it does NOT compare against already-published tags. Pushing
-          # a backport tag on an older line (e.g. v1.1.2 after v2.0.1 exists)
-          # would move `latest` to the older build. Safe as long as tags are
-          # only ever pushed monotonically forward, which is fine for now.
+          # Auto `latest` is disabled; the `type=raw` rule below is the single
+          # source of `latest`, gated on the tag being on main (see the mainline
+          # step). This keeps `latest` on the main line only, so a backport tag
+          # cut from a maintenance branch never regresses it.
+          flavor: |
+            latest=false
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=ref,event=branch
+            type=raw,value=latest,enable=${{ steps.mainline.outputs.on_main == 'true' }}
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
