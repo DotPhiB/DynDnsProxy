@@ -4,6 +4,11 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+    ignore:
+      # Microsoft.OpenApi 3.x is a new major that AspNetCore.OpenApi 10.x isn't
+      # built against; stay on 2.x until the framework moves. Revisit on ASP.NET Core 11.
+      - dependency-name: "Microsoft.OpenApi"
+        update-types: ["version-update:semver-major"]
     groups:
       nuget:
         patterns: ["*"]
