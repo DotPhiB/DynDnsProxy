@@ -25,8 +25,10 @@
     <!-- Transitive security pins -->
     <ItemGroup>
         <!-- Microsoft.OpenApi 2.0.0 arrives via Microsoft.AspNetCore.OpenApi.
-             Pinned to a patched version for CVE-2026-49451 / GHSA-v5pm-xwqc-g5wc. -->
-        <PackageVersion Include="Microsoft.OpenApi" Version="2.7.5" />
+             Pinned to the latest 2.x (patches CVE-2026-49451 / GHSA-v5pm-xwqc-g5wc,
+             fixed in 2.7.5+). Stay on 2.x: AspNetCore.OpenApi 10.x targets the 2.x
+             API, so 3.x could break at runtime despite satisfying the >=2.0.0 floor. -->
+        <PackageVersion Include="Microsoft.OpenApi" Version="2.11.0" />
     </ItemGroup>
 
 </Project>
